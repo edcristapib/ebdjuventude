@@ -3861,11 +3861,14 @@ function grifoBar() {
   b.id = 'grifo-bar';
   b.innerHTML = GRIFO_CORES.map((n, i) => `<button class="gc c${i}" title="${n}" aria-label="Grifar de ${n}" data-c="${i}"></button>`).join('') + '<button class="gx" title="Remover grifo" aria-label="Remover grifo">🗑</button>';
   b.addEventListener('mousedown', e => e.preventDefault());
-  b.addEventListener('touchstart', e => e.preventDefault(), { passive: false });
-  b.addEventListener('click', e => {
+  const acao = e => {
     const c = e.target.closest('.gc'), x = e.target.closest('.gx');
-    if (c) grifoAplicar(+c.dataset.c); else if (x) grifoRemover();
-  });
+    if (!c && !x) return;
+    e.preventDefault(); // no toque, evita o clique duplicado
+    if (c) grifoAplicar(+c.dataset.c); else grifoRemover();
+  };
+  b.addEventListener('touchend', acao, { passive: false });
+  b.addEventListener('click', acao);
   document.body.appendChild(b);
   return b;
 }
